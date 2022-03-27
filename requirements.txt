@@ -1,0 +1,4 @@
+pywinauto==0.6.8
+opencv-python==4.5.5.62
+requests==2.27.1
+numpy==1.21.5
