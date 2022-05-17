@@ -1,7 +1,7 @@
 {
     "configuration": "CPUFreq=240,FlashMode=qio,FlashFreq=80",
     "board": "esp32:esp32:esp32cam",
-    "sketch": "src\\hardware\\CameraWebServer\\CameraWebServer.ino",
-    "port": "COM3",
+    "sketch": "src/hardware/CameraWebServer/CameraWebServer.ino",
+    "port": "/dev/ttyS0",
     "output": "build"
 }

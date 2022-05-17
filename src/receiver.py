@@ -2,6 +2,7 @@ import cv2 as cv
 import numpy as np
 import requests
 import time
+import sys
 
 def get_image_from_esp_cam(url):
     i = 0
@@ -10,11 +11,11 @@ def get_image_from_esp_cam(url):
         try:
             yield cv.imdecode(np.frombuffer(r.content, np.uint8), cv.IMREAD_COLOR)
         except Exception as e:
-            print("Error when getting image from ESP, retrying the {}th time (max 10)".format(i+1))
+            print(f"Error when getting image from ESP (status_code={r.status_code}), retrying the {i+1}th time (max 10)")
             time.sleep(0.5)
             i = i + 1
             if i >= 10:
-                raise e
+                raise ValueError(f'r = {r}')
 
 def show_video():
     """For test"""

@@ -4,6 +4,7 @@ import numpy as np
 import os
 from receiver import get_image_from_esp_cam
 import keyboard
+import sys
 
 def is_in_key_region(x, y, p):
   return cv.pointPolygonTest(np.array([p[0], p[1], p[3], p[2]]), (x, y), True) > 0
@@ -60,7 +61,7 @@ class FingerPositionDetector(object):
       
       cv.setMouseCallback("Set key regions", record_points)
       
-      for img in get_image_from_esp_cam('http://192.168.99.68'):
+      for img in get_image_from_esp_cam(url):
         # 将points画出来
         for p in points:
           cv.circle(img, p, 10, (0, 0, 255), thickness=2)
@@ -146,7 +147,7 @@ class FingerPositionDetector(object):
         
   def stats_test(self, feature, i, log=False):
     print(self.stats[i]) if log else None
-    critical_val = [0.40, 1.20, 1.10, 1.00, 1.96, 1.86, 1.50, 1.96, 1.40]  # 相应的数调低会使键更敏感、同时也更容易误触
+    critical_val = [1.50, 1.20, 1.10, 1.00, 1.96, 1.86, 1.50, 1.96, 1.96]  # 相应的数调低会使键更敏感、同时也更容易误触
     # corresponds to 9,    8,    7,    6,    5,    4,    3,    2,    1
     return abs((feature - self.stats[i][0])/self.stats[i][1]) < critical_val[i]  # 1.96 for 0.05 significance level
     
@@ -165,11 +166,14 @@ class FingerPositionDetector(object):
         keyboard.release(self.key_codes[i])
 
 d = FingerPositionDetector()
-# 把下面取消注释，可以用来设置键区域
-d.set_key_regions_interactively('http://192.168.99.68'); exit(0)
+
+url = sys.argv[1]
+
+if len(sys.argv) > 2 and sys.argv[2] == 'set_key_regions':
+  d.set_key_regions_interactively(url); exit(0)
 
 calibrate_cnt = 0
-for img in get_image_from_esp_cam('http://192.168.99.68'):
+for img in get_image_from_esp_cam(url):
   print(f"\033[32m{calibrate_cnt} Calibrating... Don't touch or move!\033[0m") if calibrate_cnt < 20 else None
   if calibrate_cnt < 20:
     d.update_key_status(img, True)
